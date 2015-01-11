@@ -12,6 +12,7 @@ namespace Lucky_Draw
     {
         DataAccess DA = new DataAccess();
         StringBuilder sbSQL = new StringBuilder();
+        StringBuilder sbSQL2 = new StringBuilder();
 
         public LD_DataManage()
         {
@@ -33,7 +34,8 @@ namespace Lucky_Draw
         {
             try
             {
-                string strSQL = "select stuID as 卡号,stuName as 姓名 from StuInfo";
+                //string strSQL = "select stuID as 卡号,stuName as 姓名 from StuInfo";
+                string strSQL = "select stuName as 姓名,stuID as 卡号 from StuInfo";
                 DataTable DT = DA.GetDataTable(strSQL);
                 DG.DataSource = DT;
                 DG.Refresh();
@@ -76,10 +78,15 @@ namespace Lucky_Draw
                 int j = 0;
                 for (int i = 0; i < DT.Rows.Count; i++)
                 {
+                    sbSQL2 = new StringBuilder("insert into StuInfo(stuID) values('");
+                    sbSQL2.Append(DT.Rows[i]["卡号"].ToString());
+                    sbSQL2.Append("')");
+
                     sbSQL = new StringBuilder("insert into StuInfo(stuName) values('");
                     sbSQL.Append(DT.Rows[i]["姓名"].ToString());
                     sbSQL.Append( "')");
-                    if (DA.ExecuteSQL(sbSQL.ToString()))
+
+                    if (DA.ExecuteSQL(sbSQL.ToString()) && DA.ExecuteSQL(sbSQL2.ToString()))
                     {
                         j++;
                     }
@@ -105,6 +112,7 @@ namespace Lucky_Draw
                 {
                     DataGridViewRow DGrow = DG.CurrentRow;
                     txtID.Text = DGrow.Cells[0].Value.ToString();
+                    //txtID.Text = "1000";
                     txtName.Text = DGrow.Cells[1].Value.ToString();
                 }
             }
@@ -130,7 +138,10 @@ namespace Lucky_Draw
             {
                 sbSQL = new StringBuilder("insert into StuInfo(stuName) values('");
                 sbSQL.Append(txtName.Text.Trim() + "')");
-                if (DA.ExecuteSQL(sbSQL.ToString()))
+                sbSQL2 = new StringBuilder("insert into StuInfo(stuID) values('");
+                sbSQL2.Append(txtID.Text.Trim() + "')");
+
+                if (DA.ExecuteSQL(sbSQL.ToString()) && DA.ExecuteSQL(sbSQL2.ToString()))
                 {
                     lblMessage.Text = "添加数据成功！";
                     DataAccess.DataIsChange = true;
